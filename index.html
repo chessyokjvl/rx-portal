@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JVL Pharmacy Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;600&display=swap');
+        body { font-family: 'Prompt', sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
+        .glass { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); }
+        .app-card:hover { transform: translateY(-5px); transition: all 0.3s ease; }
+    </style>
+</head>
+<body class="text-white">
+
+    <div id="auth-section" class="flex items-center justify-center min-h-screen p-4">
+        <div class="glass p-8 rounded-2xl shadow-xl w-full max-w-md">
+            <h1 class="text-3xl font-bold text-center mb-6">💊 JVL Pharmacy</h1>
+            
+            <div id="login-form">
+                <input type="text" id="username" placeholder="Username" class="w-full mb-4 p-3 rounded-lg text-gray-800 focus:outline-none">
+                <input type="password" id="password" placeholder="Password" class="w-full mb-6 p-3 rounded-lg text-gray-800 focus:outline-none">
+                <button onclick="login()" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 rounded-lg transition">เข้าสู่ระบบ</button>
+                <div class="flex justify-between mt-4 text-sm text-gray-200">
+                    <a href="#" onclick="toggleAuth('register')" class="hover:underline">สมัครสมาชิก</a>
+                    <a href="#" class="hover:underline">ลืมรหัสผ่าน?</a>
+                </div>
+                <div class="mt-6 text-center">
+                    <button onclick="guestLogin()" class="w-full glass hover:bg-white hover:text-gray-800 font-bold py-3 rounded-lg transition border border-white">เข้าชมแบบ Guest</button>
+                </div>
+            </div>
+
+            <div id="register-form" class="hidden">
+                <input type="text" id="reg-username" placeholder="ตั้ง Username" class="w-full mb-3 p-3 rounded-lg text-gray-800 focus:outline-none">
+                <input type="email" id="reg-email" placeholder="E-mail" class="w-full mb-3 p-3 rounded-lg text-gray-800 focus:outline-none">
+                <input type="password" id="reg-password" placeholder="ตั้ง Password" class="w-full mb-3 p-3 rounded-lg text-gray-800 focus:outline-none">
+                <label class="flex items-center space-x-2 text-sm mb-6">
+                    <input type="checkbox" id="pdpa-consent">
+                    <span>ยอมรับนโยบายข้อมูลส่วนบุคคล (PDPA)</span>
+                </label>
+                <button onclick="register()" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-lg transition">ยืนยันสมัครสมาชิก</button>
+                <div class="text-center mt-4">
+                    <a href="#" onclick="toggleAuth('login')" class="text-sm text-gray-200 hover:underline">กลับไปหน้าล็อกอิน</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="portal-section" class="hidden min-h-screen p-4 md:p-8">
+        <header class="flex justify-between items-center mb-8 glass p-4 rounded-xl">
+            <h1 class="text-2xl font-bold">JVL Pharmacy Portal</h1>
+            <div class="flex items-center gap-4">
+                <span id="user-display" class="hidden md:inline"></span>
+                <button onclick="logout()" class="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg text-sm">ออกจากระบบ</button>
+            </div>
+        </header>
+
+        <div class="relative w-full max-w-2xl mx-auto mb-8 text-gray-800">
+            <input type="text" id="searchBar" onkeyup="searchApps()" placeholder="🔍 ค้นหา Application / ลิงก์... (Auto Suggest)" class="w-full p-4 rounded-full shadow-lg focus:outline-none text-lg">
+        </div>
+
+        <div id="app-grid" class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 max-w-6xl mx-auto">
+            </div>
+    </div>
+
+    <div id="qr-modal" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center p-4 z-50">
+        <div class="bg-white text-gray-800 p-8 rounded-2xl max-w-sm w-full text-center relative">
+            <button onclick="closeQR()" class="absolute top-2 right-4 text-2xl font-bold text-gray-500 hover:text-gray-800">&times;</button>
+            <h3 id="qr-app-title" class="font-bold text-xl mb-4"></h3>
+            <div id="qrcode" class="flex justify-center mb-4"></div>
+            <a id="qr-app-link" href="#" target="_blank" class="block bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600">เปิดลิงก์นี้ในเครื่อง</a>
+        </div>
+    </div>
+
+    <script>
+        // *** เอา URL ที่ได้จาก Apps Script มาใส่ตรงนี้ ***
+        const API_URL = "https://script.google.com/macros/s/AKfycbwXSuVt0YB34pHhyDK-O_xfaZ03nbUAPvQYBaoiQtdokOur8aEez8inwmtxzWhGWDNG8g/exec"; 
+        
+        let currentUserRole = 0; // 0=Guest, 1=Internal, 2=Admin
+        let allApps = [];
+
+        function toggleAuth(mode) {
+            document.getElementById('login-form').classList.toggle('hidden', mode === 'register');
+            document.getElementById('register-form').classList.toggle('hidden', mode === 'login');
+        }
+
+        async function fetchAPI(action, payload) {
+            Swal.fire({title: 'กำลังประมวลผล...', allowOutsideClick: false, didOpen: () => Swal.showLoading()});
+            try {
+                const res = await fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: action, payload: payload })
+                });
+                const data = await res.json();
+                Swal.close();
+                return data;
+            } catch (err) {
+                Swal.close();
+                alert("Network Error");
+                console.error(err);
+            }
+        }
+
+        async function login() {
+            const user = document.getElementById('username').value;
+            const pass = document.getElementById('password').value;
+            const res = await fetchAPI('login', { username: user, password: pass });
+            if(res && res.success) {
+                enterPortal(res.user.roleLevel, res.user.username);
+            } else {
+                alert(res.message);
+            }
+        }
+
+        async function register() {
+            if(!document.getElementById('pdpa-consent').checked) return alert("กรุณายอมรับ PDPA");
+            const payload = {
+                username: document.getElementById('reg-username').value,
+                email: document.getElementById('reg-email').value,
+                password: document.getElementById('reg-password').value,
+                pdpa: true
+            };
+            const res = await fetchAPI('register', payload);
+            alert(res.message);
+            if(res.success) toggleAuth('login');
+        }
+
+        function guestLogin() {
+            enterPortal(0, 'Guest');
+        }
+
+        async function enterPortal(roleLevel, username) {
+            currentUserRole = roleLevel;
+            document.getElementById('auth-section').classList.add('hidden');
+            document.getElementById('portal-section').classList.remove('hidden');
+            document.getElementById('user-display').innerText = `👤 สวัสดี, ${username}`;
+            
+            // โหลดรายชื่อแอป
+            const res = await fetchAPI('getApps', { roleLevel: roleLevel });
+            if(res && res.success) {
+                allApps = res.data;
+                renderApps(allApps);
+            }
+        }
+
+        function logout() {
+            document.getElementById('portal-section').classList.add('hidden');
+            document.getElementById('auth-section').classList.remove('hidden');
+            document.getElementById('username').value = '';
+            document.getElementById('password').value = '';
+        }
+
+        function renderApps(appsToRender) {
+            const grid = document.getElementById('app-grid');
+            grid.innerHTML = '';
+            appsToRender.forEach(app => {
+                grid.innerHTML += `
+                    <div class="glass rounded-xl p-4 flex flex-col items-center text-center app-card cursor-pointer" onclick="showQR('${app.name}', '${app.url}')">
+                        <img src="${app.icon || 'https://cdn-icons-png.flaticon.com/512/2800/2800015.png'}" alt="icon" class="w-16 h-16 object-cover rounded-2xl mb-3 bg-white p-1">
+                        <h3 class="font-bold text-lg leading-tight line-clamp-2">${app.name}</h3>
+                        <p class="text-xs text-gray-200 mt-2 line-clamp-2">${app.description || ''}</p>
+                    </div>
+                `;
+            });
+        }
+
+        // Smart Search Auto Suggest
+        function searchApps() {
+            const query = document.getElementById('searchBar').value.toLowerCase();
+            const filtered = allApps.filter(app => app.name.toLowerCase().includes(query) || (app.description && app.description.toLowerCase().includes(query)));
+            renderApps(filtered);
+        }
+
+        // Auto QR Code
+        function showQR(name, url) {
+            document.getElementById('qr-modal').classList.remove('hidden');
+            document.getElementById('qr-app-title').innerText = name;
+            document.getElementById('qr-app-link').href = url;
+            document.getElementById('qrcode').innerHTML = ''; // Clear old QR
+            new QRCode(document.getElementById("qrcode"), { text: url, width: 200, height: 200 });
+        }
+
+        function closeQR() {
+            document.getElementById('qr-modal').classList.add('hidden');
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</body>
+</html>
