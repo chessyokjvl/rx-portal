@@ -36,9 +36,10 @@
                 <input type="text" id="username" placeholder="Username" onkeydown="if(event.key === 'Enter') login()" class="w-full mb-4 p-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500">
                 <input type="password" id="password" placeholder="Password" onkeydown="if(event.key === 'Enter') login()" class="w-full mb-6 p-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500">
                 <button onclick="login()" class="w-full gradient-btn font-bold py-3 rounded-lg">เข้าสู่ระบบ</button>
-                <div class="flex justify-between mt-4 text-sm font-semibold">
-                    <a href="#" onclick="toggleAuth('register')" class="text-blue-500 hover:text-blue-700">สมัครสมาชิกใหม่</a>
-                </div>
+                <div class="flex justify-between mt-4 text-sm font-semibold"><a href="#" onclick="toggleAuth('register')" class="text-blue-500 hover:text-blue-700">สมัครสมาชิกใหม่</a></div>
+                <div class="flex justify-between mt-4 text-sm font-semibold"><a href="#" onclick="toggleAuth('register')" class="text-blue-500 hover:text-blue-700">สมัครสมาชิกใหม่</a>
+                <a href="#" onclick="forgotPasswordUI()" class="text-gray-500 hover:text-gray-700">ลืมรหัสผ่าน?</a></div>
+                
                 <div class="my-6 border-b text-center relative"><span class="bg-white px-3 text-gray-400 text-sm absolute -top-2.5 left-1/2 -translate-x-1/2">หรือ</span></div>
                 <button onclick="guestLogin()" class="w-full border border-gray-300 text-gray-700 hover:bg-gray-100 font-bold py-3 rounded-lg">เข้าชมแบบผู้เยี่ยมชม (Guest)</button>
             </div>
@@ -523,6 +524,34 @@
             new QRCode(document.getElementById("qrcode"), { text: url, width: 180, height: 180, colorDark : "#1e293b" });
         }
         function closeQR() { document.getElementById('qr-modal').classList.add('hidden'); }
+
+        // --- Forgot Password UI ---
+        async function forgotPasswordUI() {
+            const { value: email } = await Swal.fire({
+                title: 'ลืมรหัสผ่าน?',
+                text: "กรุณากรอกอีเมลที่คุณใช้สมัครสมาชิก ระบบจะรีเซ็ตและส่งรหัสผ่านใหม่ไปให้ครับ",
+                input: 'email',
+                inputPlaceholder: 'อีเมลของคุณ (เช่น test@gmail.com)',
+                showCancelButton: true,
+                confirmButtonText: 'ส่งรหัสผ่านใหม่',
+                cancelButtonText: 'ยกเลิก',
+                inputValidator: (value) => {
+                    if (!value) return 'กรุณากรอกอีเมล!';
+                    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return 'รูปแบบอีเมลไม่ถูกต้อง!';
+                }
+            });
+
+            if (email) {
+                // ส่งคำขอไปหา Google Apps Script
+                const res = await fetchAPI('forgotPassword', { email: email });
+                if (res.success) {
+                    Swal.fire('สำเร็จ', res.message, 'success');
+                } else {
+                    Swal.fire('ผิดพลาด', res.message, 'error');
+                }
+            }
+        }
+        
     </script>
 </body>
 </html>
