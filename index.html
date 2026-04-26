@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JVL Pharmacy Portal</title>
+    <title>Pharmacy Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
@@ -16,12 +16,9 @@
         .gradient-btn { background: linear-gradient(135deg, #2563eb, #7c3aed); color: white; transition: all 0.3s; }
         .gradient-btn:hover { box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4); transform: translateY(-2px); }
         .sidebar { transition: transform 0.3s ease-in-out; }
-        .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
         .app-cover-container { height: 120px; width: 100%; border-radius: 12px 12px 0 0; overflow: hidden; position: relative; }
         .app-cover-img { width: 100%; height: 100%; object-fit: cover; opacity: 0.9; transition: transform 0.5s ease; }
         .glass-card:hover .app-cover-img { transform: scale(1.1); }
-        
-        /* สไตล์สำหรับ Scrollbar สวยๆ */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 10px; }
     </style>
@@ -32,12 +29,12 @@
         <div class="glass-card p-8 w-full max-w-md relative overflow-hidden">
             <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-500 to-purple-600"></div>
             <img src="https://www.rploei.go.th/ec2/wp-content/uploads/2017/08/cropped-cropped-cropped-3.png" alt="Logo" class="h-24 mx-auto mb-6 object-contain">
-            <h1 class="text-2xl font-bold text-center mb-2 gradient-text">JVL Pharmacy Portal</h1>
+            <h1 class="text-2xl font-bold text-center mb-2 gradient-text">Pharmacy Portal</h1>
             <p class="text-center text-gray-500 mb-6 text-sm">โรงพยาบาลจิตเวชเลยราชนครินทร์</p>
             
             <div id="login-form">
-                <input type="text" id="username" placeholder="Username" onkeydown="if(event.key === 'Enter') login()" class="w-full mb-4 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
-                <input type="password" id="password" placeholder="Password" onkeydown="if(event.key === 'Enter') login()" class="w-full mb-6 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                <input type="text" id="username" placeholder="Username" onkeydown="if(event.key === 'Enter') login()" class="w-full mb-4 p-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500">
+                <input type="password" id="password" placeholder="Password" onkeydown="if(event.key === 'Enter') login()" class="w-full mb-6 p-3 border border-gray-300 rounded-lg outline-none focus:ring-2 focus:ring-blue-500">
                 <button onclick="login()" class="w-full gradient-btn font-bold py-3 rounded-lg">เข้าสู่ระบบ</button>
                 <div class="flex justify-between mt-4 text-sm font-semibold">
                     <a href="#" onclick="toggleAuth('register')" class="text-blue-500 hover:text-blue-700">สมัครสมาชิกใหม่</a>
@@ -47,9 +44,9 @@
             </div>
 
             <div id="register-form" class="hidden">
-                <input type="text" id="reg-username" placeholder="ตั้ง Username" class="w-full mb-3 p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
-                <input type="email" id="reg-email" placeholder="E-mail" class="w-full mb-3 p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
-                <input type="password" id="reg-password" placeholder="ตั้ง Password" class="w-full mb-3 p-3 border rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                <input type="text" id="reg-username" placeholder="ตั้ง Username" class="w-full mb-3 p-3 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500">
+                <input type="email" id="reg-email" placeholder="E-mail" class="w-full mb-3 p-3 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500">
+                <input type="password" id="reg-password" placeholder="ตั้ง Password" class="w-full mb-3 p-3 border rounded-lg outline-none focus:ring-2 focus:ring-blue-500">
                 <label class="flex items-start gap-2 text-sm mb-6 text-gray-600"><input type="checkbox" id="pdpa-consent" class="mt-1"><span>ยอมรับนโยบายข้อมูลส่วนบุคคล (PDPA)</span></label>
                 <button onclick="register()" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 rounded-lg">ยืนยันสมัครสมาชิก</button>
                 <div class="text-center mt-4"><a href="#" onclick="toggleAuth('login')" class="text-sm text-gray-500 hover:text-blue-600">ย้อนกลับไปล็อกอิน</a></div>
@@ -73,8 +70,11 @@
                 <div id="management-menu" class="hidden mt-4 border-t pt-4">
                     <p class="text-xs font-semibold text-gray-400 uppercase mb-2">การจัดการระบบ</p>
                     <button onclick="openManageModal()" class="w-full flex items-center gap-3 text-left p-3 hover:bg-gray-100 rounded-lg text-gray-700 font-semibold text-sm"><i class="fas fa-plus-circle text-green-500"></i> เพิ่มแอป / ลิงก์</button>
-                    <button onclick="openCategoryModal()" class="w-full flex items-center gap-3 text-left p-3 hover:bg-gray-100 rounded-lg text-gray-700 font-semibold text-sm"><i class="fas fa-tags text-orange-500"></i> จัดการหมวดหมู่</button>
-                    <button onclick="switchView('reports')" class="w-full flex items-center gap-3 text-left p-3 hover:bg-gray-100 rounded-lg text-gray-700 font-semibold text-sm"><i class="fas fa-file-alt text-red-500"></i> รายงาน & Log</button>
+                    
+                    <div id="admin-only-menu" class="hidden mt-1">
+                        <button onclick="openCategoryModal()" class="w-full flex items-center gap-3 text-left p-3 hover:bg-gray-100 rounded-lg text-gray-700 font-semibold text-sm"><i class="fas fa-tags text-orange-500"></i> จัดการหมวดหมู่</button>
+                        <button onclick="switchView('reports')" class="w-full flex items-center gap-3 text-left p-3 hover:bg-gray-100 rounded-lg text-gray-700 font-semibold text-sm"><i class="fas fa-file-alt text-red-500"></i> รายงาน & Log</button>
+                    </div>
                 </div>
             </div>
 
@@ -100,11 +100,9 @@
                 
                 <div id="view-dashboard" class="hidden">
                     <h2 class="text-2xl font-bold mb-6 text-gray-800 border-l-4 border-indigo-500 pl-3">Dashboard Insight</h2>
-                    
                     <div id="dash-breadcrumb" class="mb-4 text-sm font-semibold text-gray-500 hidden cursor-pointer" onclick="renderDashboardCategories()">
                         <i class="fas fa-arrow-left mr-1"></i> ย้อนกลับไปหน้าหลักหมวดหมู่
                     </div>
-
                     <div id="dash-content"></div>
 
                     <h3 class="text-lg font-bold mt-10 mb-4 text-gray-700"><i class="fas fa-clock text-blue-500"></i> เพิ่มล่าสุด 10 รายการ</h3>
@@ -116,7 +114,7 @@
                         <h2 id="section-title" class="text-2xl font-bold text-gray-800 border-l-4 border-blue-500 pl-3">แอปพลิเคชันทั้งหมด</h2>
                         <select id="filter-cat" onchange="filterCategory(this.value)" class="p-2 border rounded-lg text-sm bg-white font-semibold shadow-sm">
                             <option value="ทั้งหมด">หมวดหมู่ทั้งหมด</option>
-                            </select>
+                        </select>
                     </div>
                     <div id="app-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
                 </div>
@@ -143,8 +141,7 @@
             <input type="hidden" id="edit-app-id">
             <input type="text" id="app-name" placeholder="ชื่อระบบงาน" class="w-full mb-3 p-2 border rounded outline-none focus:ring-1 focus:ring-blue-500">
             <input type="text" id="app-url" placeholder="URL Link" class="w-full mb-3 p-2 border rounded outline-none">
-            <select id="app-category" class="w-full mb-3 p-2 border rounded font-semibold text-gray-700 outline-none">
-                </select>
+            <select id="app-category" class="w-full mb-3 p-2 border rounded font-semibold text-gray-700 outline-none"></select>
             <input type="text" id="app-cover" placeholder="URL ภาพ Cover (เว้นไว้เพื่อใช้ค่าเริ่มต้น)" class="w-full mb-3 p-2 border rounded text-sm outline-none">
             <input type="text" id="app-desc" placeholder="คำอธิบายสั้นๆ" class="w-full mb-3 p-2 border rounded outline-none">
             <select id="app-level" class="w-full mb-4 p-2 border rounded text-gray-700 outline-none">
@@ -189,7 +186,7 @@
         let allCategories = [];
         let currentFilter = "ทั้งหมด";
 
-        const defCover = "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=500"; // ภาพกันเหนียว
+        const defCover = "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&q=80&w=500"; 
 
         // --- Basic UI ---
         function toggleAuth(mode) {
@@ -245,10 +242,13 @@
             document.getElementById('main-section').classList.remove('hidden');
             document.getElementById('display-username').innerText = username;
             document.getElementById('display-role').innerText = roleLevel == 0 ? "ผู้เยี่ยมชม (Guest)" : roleLevel == 1 ? "เจ้าหน้าที่ (User)" : "ผู้ดูแลระบบ (Admin)";
+            
+            // จัดการสิทธิ์การแสดงเมนู
             if(currentUser.role > 0) document.getElementById('management-menu').classList.remove('hidden');
+            if(currentUser.role === 2) document.getElementById('admin-only-menu').classList.remove('hidden'); // โชว์เฉพาะ Admin
             
             await loadData();
-            switchView('dashboard'); // เริ่มต้นที่หน้า Dashboard
+            switchView('dashboard'); 
         }
 
         async function loadData() {
@@ -273,6 +273,22 @@
             });
         }
 
+        // --- Dynamic Category Icons Logic ---
+        function getIconForCategory(catName) {
+            const name = catName.toLowerCase();
+            if (name.includes('โปรแกรม') || name.includes('app') || name.includes('software')) return '<i class="fas fa-laptop-code text-4xl text-blue-500 mb-3"></i>';
+            if (name.includes('ความรู้') || name.includes('วิชาการ') || name.includes('ตำรา')) return '<i class="fas fa-book-open text-4xl text-purple-500 mb-3"></i>';
+            if (name.includes('guideline') || name.includes('แนวทาง')) return '<i class="fas fa-sitemap text-4xl text-green-500 mb-3"></i>';
+            if (name.includes('had') || name.includes('คุณภาพ') || name.includes('มาตรฐาน')) return '<i class="fas fa-award text-4xl text-yellow-500 mb-3"></i>';
+            if (name.includes('จิตเวช') || name.includes('สมอง')) return '<i class="fas fa-brain text-4xl text-pink-500 mb-3"></i>';
+            if (name.includes('ทางกาย') || name.includes('รักษา')) return '<i class="fas fa-heartbeat text-4xl text-red-500 mb-3"></i>';
+            if (name.includes('link') || name.includes('ลิงก์')) return '<i class="fas fa-link text-4xl text-indigo-500 mb-3"></i>';
+            if (name.includes('ทั่วไป') || name.includes('อื่นๆ')) return '<i class="fas fa-layer-group text-4xl text-gray-500 mb-3"></i>';
+            
+            // Default icon ถ้าคำไม่ตรงเงื่อนไขเลย
+            return '<i class="fas fa-folder-open text-4xl text-gray-400 mb-3"></i>'; 
+        }
+
         // --- DASHBOARD (Drill Down) ---
         function renderDashboardCategories() {
             document.getElementById('dash-breadcrumb').classList.add('hidden');
@@ -282,15 +298,16 @@
             
             allCategories.forEach(cat => {
                 const count = allApps.filter(a => a.category === cat.name).length;
+                const iconHtml = getIconForCategory(cat.name); // เรียกใช้ Dynamic Icon
+
                 grid.innerHTML += `
-                    <div onclick="drillDownCategory('${cat.name}')" class="glass-card p-6 flex flex-col items-center justify-center cursor-pointer hover:bg-blue-50 transition border-l-4 border-indigo-400">
-                        <i class="fas fa-folder-open text-4xl text-indigo-300 mb-3"></i>
+                    <div onclick="drillDownCategory('${cat.name}')" class="glass-card p-6 flex flex-col items-center justify-center cursor-pointer hover:bg-blue-50 transition border-l-4 border-indigo-400 group">
+                        <div class="transform group-hover:scale-110 transition duration-300">${iconHtml}</div>
                         <h3 class="font-bold text-gray-800 text-center">${cat.name}</h3>
                         <span class="text-xs bg-indigo-100 text-indigo-800 px-2 py-1 rounded-full mt-2">${count} รายการ</span>
                     </div>`;
             });
 
-            // ล่าสุด 10 รายการ
             const latestGrid = document.getElementById('dash-latest');
             latestGrid.innerHTML = '';
             allApps.slice(0, 10).forEach(app => {
@@ -355,7 +372,7 @@
                 </div>`;
         }
 
-        // --- MANAGE APP (Add/Edit/Delete) ---
+        // --- MANAGE APP ---
         function openManageModal() { 
             document.getElementById('modal-title').innerText = "เพิ่มแอป / ลิงก์";
             document.getElementById('edit-app-id').value = "";
@@ -425,9 +442,12 @@
             list.innerHTML = '';
             allCategories.forEach(cat => {
                 list.innerHTML += `
-                    <li class="flex justify-between items-center py-2 px-3 hover:bg-gray-100">
-                        <span class="text-sm font-semibold">${cat.name}</span>
-                        <button onclick="deleteCategory('${cat.id}')" class="text-red-500 hover:text-red-700"><i class="fas fa-times"></i></button>
+                    <li class="flex justify-between items-center py-2 px-3 hover:bg-gray-100 rounded">
+                        <span class="text-sm font-semibold text-gray-700">${cat.name}</span>
+                        <div>
+                            <button onclick="editCategory('${cat.id}', '${cat.name}')" class="text-yellow-500 hover:text-yellow-700 mr-3 transition"><i class="fas fa-edit"></i></button>
+                            <button onclick="deleteCategory('${cat.id}')" class="text-red-500 hover:text-red-700 transition"><i class="fas fa-times"></i></button>
+                        </div>
                     </li>`;
             });
         }
@@ -438,9 +458,39 @@
             const res = await fetchAPI('manageCategory', { mode: 'add', catName: name, username: currentUser.username, userRole: currentUser.role });
             if(res.success) { document.getElementById('new-cat-name').value = ""; await loadData(); renderCategoryList(); }
         }
+
+        // ระบบแก้ไขชื่อหมวดหมู่ (Popup SweetAlert)
+        async function editCategory(catId, oldName) {
+            const { value: newName } = await Swal.fire({
+                title: 'แก้ไขชื่อหมวดหมู่',
+                input: 'text',
+                inputValue: oldName,
+                showCancelButton: true,
+                confirmButtonText: 'บันทึก',
+                cancelButtonText: 'ยกเลิก',
+                inputValidator: (value) => {
+                    if (!value) return 'กรุณาระบุชื่อหมวดหมู่!'
+                }
+            });
+
+            if (newName && newName !== oldName) {
+                const res = await fetchAPI('manageCategory', { mode: 'edit', catId: catId, catName: newName, username: currentUser.username, userRole: currentUser.role });
+                if(res.success) { 
+                    Swal.fire('สำเร็จ', 'อัปเดตหมวดหมู่แล้ว', 'success');
+                    await loadData(); 
+                    renderCategoryList(); 
+                } else {
+                    Swal.fire('ผิดพลาด', res.message, 'error');
+                }
+            }
+        }
+
         async function deleteCategory(catId) {
-            const res = await fetchAPI('manageCategory', { mode: 'delete', catId: catId, username: currentUser.username, userRole: currentUser.role });
-            if(res.success) { await loadData(); renderCategoryList(); }
+            const confirm = await Swal.fire({ title: 'ยืนยันการลบ?', icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'ลบทิ้ง' });
+            if (confirm.isConfirmed) {
+                const res = await fetchAPI('manageCategory', { mode: 'delete', catId: catId, username: currentUser.username, userRole: currentUser.role });
+                if(res.success) { await loadData(); renderCategoryList(); }
+            }
         }
 
         // --- REPORTS ---
@@ -452,12 +502,15 @@
                 res.logs.forEach(log => {
                     let d = new Date(log.time);
                     tbody.innerHTML += `
-                        <tr class="hover:bg-gray-50">
-                            <td class="p-3 text-xs">${d.toLocaleString('th-TH')}</td>
-                            <td class="p-3 font-semibold text-blue-600">${log.user}</td>
-                            <td class="p-3 text-xs"><span class="bg-gray-200 px-2 py-1 rounded">${log.action}</span></td>
+                        <tr class="hover:bg-gray-50 border-b">
+                            <td class="p-3 text-xs text-gray-500">${d.toLocaleString('th-TH')}</td>
+                            <td class="p-3 font-bold text-blue-600">${log.user}</td>
+                            <td class="p-3 text-xs"><span class="bg-gray-200 px-2 py-1 rounded-md">${log.action}</span></td>
                         </tr>`;
                 });
+            } else if (!res.success) {
+                Swal.fire('ปฏิเสธการเข้าถึง', res.message, 'error');
+                switchView('dashboard'); // เด้งกลับหน้า Dashboard
             }
         }
 
